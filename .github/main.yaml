@@ -1,0 +1,30 @@
+name: Deploy with Rsync
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Rsync to host directory
+      run: |
+        rsync -avz --delete \
+          --exclude='.git' \
+          --exclude='node_modules' \
+          --exclude='.env' \
+          ./ /home/runner/deployment/
+    
+    - name: Set permissions
+      run: |
+        chmod -R 755 /home/runner/deployment/
+    
+    - name: Verify deployment
+      run: |
+        echo "Deployment completed to /home/runner/deployment/"
+        ls -la /home/runner/deployment/
